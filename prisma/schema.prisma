@@ -1,0 +1,688 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Base User model for authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  phone     String?  @unique
+  password  String?
+  name      String?
+  avatar    String?
+  role      UserRole @default(WORKER)
+  isActive  Boolean  @default(true)
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  worker    Worker?
+  employer  Employer?
+  agency    Agency?
+  reviewsAsReviewer Review[] @relation("ReviewReviewer")
+  reviewsAsReviewee Review[] @relation("ReviewReviewee")
+  subscriptions Subscription[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  WORKER
+  EMPLOYER
+  AGENCY
+  ADMIN
+}
+
+// Worker Profile
+model Worker {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Personal Details
+  firstName   String
+  lastName    String
+  gender      Gender
+  age         Int
+  dateOfBirth DateTime?
+  nationality String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  latitude    Float?
+  longitude   Float?
+  
+  // Professional Details
+  bio         String?
+  experience  Int      // Years of experience
+  hourlyRate  Float    // Expected hourly rate
+  monthlyRate Float?   // Expected monthly rate
+  isAvailable Boolean  @default(true)
+  
+  // Preferences
+  workType    String   // JSON array of WorkType
+  preferredShift Shift?
+  preferredDays  String?  // JSON array of days ["Monday", "Tuesday", ...]
+  preferredLocation String?
+  maxDistance   Int?     // Maximum distance willing to travel (km)
+  
+  // Languages
+  languages    String?  // JSON array of language codes ["en", "hi", ...]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  skills      WorkerSkill[]
+  documents   Document[]
+  applications Application[]
+  contracts   Contract[]
+  attendance  Attendance[]
+  payments    Payment[]
+  trainings   WorkerTraining[]
+  agencyId    String?
+  agency      Agency?  @relation("AgencyWorkers", fields: [agencyId], references: [id])
+  
+  @@map("workers")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum WorkType {
+  FULL_TIME
+  PART_TIME
+  LIVE_IN
+  LIVE_OUT
+  TEMPORARY
+}
+
+enum Shift {
+  MORNING
+  AFTERNOON
+  EVENING
+  NIGHT
+  FLEXIBLE
+}
+
+// Employer Profile
+model Employer {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Household Details
+  firstName String
+  lastName  String
+  companyName String?
+  address   String
+  city      String
+  state     String
+  country   String
+  latitude  Float?
+  longitude Float?
+  phone     String?
+  
+  // Family Details
+  familySize Int?
+  hasChildren Boolean @default(false)
+  childrenAges String? // JSON array of children ages
+  hasElderly  Boolean @default(false)
+  hasPets     Boolean @default(false)
+  petDetails String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  jobs      Job[]
+  contracts Contract[]
+  payments  Payment[]
+  
+  @@map("employers")
+}
+
+// Agency Profile
+model Agency {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Company Details
+  name        String
+  licenseNumber String?
+  description String?
+  address     String
+  city        String
+  state       String
+  country     String
+  latitude    Float?
+  longitude   Float?
+  phone       String
+  email       String?
+  website     String?
+  
+  // Verification
+  isVerified  Boolean  @default(false)
+  verificationDocuments String? // JSON array of document URLs
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  workers     Worker[] @relation("AgencyWorkers") // Workers managed by this agency
+  jobs        Job[]
+  contracts   Contract[]
+  payments    Payment[] @relation("AgencyPayments")
+  
+  @@map("agencies")
+}
+
+// Skills
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    SkillCategory
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  workerSkills WorkerSkill[]
+  jobSkills    JobSkill[]
+  
+  @@map("skills")
+}
+
+enum SkillCategory {
+  CLEANING
+  COOKING
+  CHILDCARE
+  ELDERLY_CARE
+  DRIVING
+  LAUNDRY
+  GARDENING
+  MAINTENANCE
+  PET_CARE
+  TUTORING
+  OTHER
+}
+
+// Worker-Skill Many-to-Many Relationship
+model WorkerSkill {
+  id        String   @id @default(cuid())
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  skillId   String
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  level     SkillLevel @default(BEGINNER)
+  years     Int?     // Years of experience with this skill
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([workerId, skillId])
+  @@map("worker_skills")
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// Languages
+model Language {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String   @unique // e.g., "en", "hi", "es"
+  
+  createdAt DateTime @default(now())
+  
+  @@map("languages")
+}
+
+// Documents
+model Document {
+  id          String   @id @default(cuid())
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  
+  type        DocumentType
+  name        String
+  fileUrl     String
+  isVerified  Boolean  @default(false)
+  verifiedAt  DateTime?
+  expiryDate  DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("documents")
+}
+
+enum DocumentType {
+  ID_PROOF
+  PASSPORT
+  VISA
+  POLICE_VERIFICATION
+  ADDRESS_PROOF
+  HEALTH_CERTIFICATE
+  SKILL_CERTIFICATE
+  EXPERIENCE_CERTIFICATE
+  OTHER
+}
+
+// Jobs
+model Job {
+  id          String   @id @default(cuid())
+  employerId  String
+  employer    Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  agencyId    String?
+  agency      Agency?  @relation(fields: [agencyId], references: [id])
+  
+  title       String
+  description String
+  category    SkillCategory
+  
+  // Job Details
+  workType    WorkType
+  shift       Shift?
+  workingDays String? // JSON array of days ["Monday", "Tuesday", ...]
+  startTime   String?  // HH:MM format
+  endTime     String?  // HH:MM format
+  
+  // Salary
+  salaryType  SalaryType
+  salaryAmount Float
+  salaryCurrency String @default("INR")
+  
+  // Location
+  address     String
+  city        String
+  state       String
+  country     String
+  latitude    Float?
+  longitude   Float?
+  
+  // Requirements
+  minExperience Int?
+  minAge       Int?
+  maxAge       Int?
+  gender       Gender?
+  languages    String?  // JSON array of language codes
+  
+  // Status
+  status      JobStatus @default(ACTIVE)
+  isUrgent    Boolean   @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  closingDate DateTime?
+
+  // Relations
+  skills      JobSkill[]
+  applications Application[]
+  contracts   Contract[]
+  
+  @@map("jobs")
+}
+
+enum SalaryType {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum JobStatus {
+  ACTIVE
+  FILLED
+  CLOSED
+  EXPIRED
+  SUSPENDED
+}
+
+// Job-Skill Many-to-Many Relationship
+model JobSkill {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skillId   String
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  isRequired Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([jobId, skillId])
+  @@map("job_skills")
+}
+
+// Applications
+model Application {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  
+  status    ApplicationStatus @default(PENDING)
+  message   String?
+  
+  appliedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  contracts Contract[]
+  
+  @@unique([jobId, workerId])
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+  ACCEPTED
+  WITHDRAWN
+}
+
+// Contracts
+model Contract {
+  id          String   @id @default(cuid())
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application Application? @relation(fields: [applicationId], references: [id])
+  
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  employerId  String
+  employer    Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  agencyId    String?
+  agency      Agency?  @relation(fields: [agencyId], references: [id])
+  
+  // Contract Details
+  startDate   DateTime
+  endDate     DateTime?
+  isPermanent Boolean  @default(false)
+  
+  // Salary
+  salary      Float
+  salaryType  SalaryType
+  salaryCurrency String @default("INR")
+  
+  // Terms
+  workingHours String?
+  duties      String?
+  terms       String?
+  
+  // Status
+  status      ContractStatus @default(DRAFT)
+  signedAt    DateTime?
+  terminatedAt DateTime?
+  terminationReason String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  payments    Payment[]
+  attendance  Attendance[]
+  reviews     Review[]
+  
+  @@map("contracts")
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  CANCELLED
+}
+
+// Payments
+model Payment {
+  id          String   @id @default(cuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  employerId  String
+  employer    Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  agencyId    String?
+  agency      Agency?  @relation("AgencyPayments", fields: [agencyId], references: [id])
+  
+  // Payment Details
+  amount      Float
+  currency    String   @default("INR")
+  type        PaymentType
+  description String?
+  
+  // Commission
+  agencyCommission Float?
+  platformCommission Float?
+  
+  // Status
+  status      PaymentStatus @default(PENDING)
+  dueDate     DateTime
+  paidAt      DateTime?
+  
+  // Payment Method
+  paymentMethod PaymentMethod?
+  transactionId String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("payments")
+}
+
+enum PaymentType {
+  SALARY
+  BONUS
+  TIP
+  COMMISSION
+  REFUND
+  PENALTY
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  UPI
+  CREDIT_CARD
+  DEBIT_CARD
+  WALLET
+  CHEQUE
+}
+
+// Attendance
+model Attendance {
+  id          String   @id @default(cuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  
+  date        DateTime
+  checkInTime DateTime?
+  checkOutTime DateTime?
+  
+  // Location
+  checkInLatitude  Float?
+  checkInLongitude Float?
+  checkOutLatitude Float?
+  checkOutLongitude Float?
+  
+  // Status
+  status      AttendanceStatus @default(PENDING)
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([contractId, date])
+  @@map("attendance")
+}
+
+enum AttendanceStatus {
+  PENDING
+  PRESENT
+  ABSENT
+  LATE
+  EARLY_LEAVE
+  HOLIDAY
+  SICK_LEAVE
+}
+
+// Reviews
+model Review {
+  id          String   @id @default(cuid())
+  
+  // Reviewer (could be employer or worker)
+  reviewerId  String
+  reviewer    User     @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  
+  // Reviewee (worker or employer)
+  revieweeId  String
+  reviewee    User     @relation("ReviewReviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
+  
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  rating      Int      // 1-5 stars
+  comment     String?
+  
+  // Categories
+  punctuality Int?     // 1-5
+  quality     Int?     // 1-5
+  behavior    Int?     // 1-5
+  communication Int?  // 1-5
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([contractId, reviewerId])
+  @@map("reviews")
+}
+
+// Training Modules
+model Training {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    SkillCategory
+  content     String?  // JSON content with lessons, videos, etc.
+  duration    Int?     // Duration in minutes
+  difficulty  TrainingDifficulty @default(BEGINNER)
+  
+  isPublished Boolean  @default(false)
+  isPremium   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  workerTrainings WorkerTraining[]
+  
+  @@map("trainings")
+}
+
+enum TrainingDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// Worker-Training Relationship
+model WorkerTraining {
+  id          String   @id @default(cuid())
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  trainingId  String
+  training    Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  
+  status      TrainingStatus @default(STARTED)
+  progress    Float    @default(0) // 0-100 percentage
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  // Certificate
+  certificateUrl String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([workerId, trainingId])
+  @@map("worker_trainings")
+}
+
+enum TrainingStatus {
+  STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CERTIFIED
+}
+
+// Subscriptions
+model Subscription {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  plan        SubscriptionPlan
+  price       Float
+  currency    String   @default("INR")
+  
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  
+  // Payment
+  paymentId   String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("subscriptions")
+}
+
+enum SubscriptionPlan {
+  WORKER_BASIC
+  WORKER_PREMIUM
+  EMPLOYER_BASIC
+  EMPLOYER_PREMIUM
+  AGENCY_BASIC
+  AGENCY_PREMIUM
+}
