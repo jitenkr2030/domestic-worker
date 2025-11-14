@@ -1,141 +1,285 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# Domestic Worker Platform
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+A comprehensive marketplace platform connecting domestic workers with employers, featuring job matching, contract management, payment processing, and training modules.
 
-## ✨ Technology Stack
+## 🌟 Features
 
-This scaffold provides a robust foundation built with:
+### Multi-Role Platform
+- **Domestic Workers**: Profile creation, skill showcase, job applications, contract management
+- **Employers**: Worker search, job posting, contract management, payment processing
+- **Agencies**: Worker management, agency services, subscription plans
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+### Core Functionality
+- **User Authentication & Authorization** with NextAuth.js
+- **Job Posting & Matching** system
+- **Application & Contract Management**
+- **Payment Processing** with transaction tracking
+- **Attendance Monitoring** with time tracking
+- **Review & Rating System**
+- **Document Management** (upload/store worker documents)
+- **Training Modules** for skill development
+- **Real-time Notifications**
+- **Responsive Design** with Tailwind CSS
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+### Advanced Features
+- **Multi-language Support** (English, Hindi, Tamil, Telugu, Bengali)
+- **Skill-based Matching** (10 predefined skill categories)
+- **Subscription Management** for premium features
+- **Analytics Dashboard** for employers and agencies
+- **Mobile-responsive Interface**
+- **Role-based Access Control**
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+## 🛠 Tech Stack
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Axios** - Promise-based HTTP client
+- **Frontend**: Next.js 15.3.5 with TypeScript
+- **Database**: SQLite with Prisma ORM v6.19.0
+- **Authentication**: NextAuth.js v4.24.13
+- **Styling**: Tailwind CSS 4 with shadcn/ui components
+- **State Management**: TanStack Query
+- **Validation**: Zod v4.0.2
+- **Hashing**: bcryptjs for password security
+- **Icons**: Lucide React icons
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+## 📋 Prerequisites
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+- Node.js 18+ 
+- npm or yarn
+- Git
 
 ## 🚀 Quick Start
 
+### 1. Clone the Repository
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
+git clone https://github.com/jitenkr2030/domestic-worker.git
+cd domestic-worker
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-## 🤖 Powered by Z.ai
+### 3. Environment Setup
+Create a `.env` file in the root directory:
+```env
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET=your-secret-key-here-change-in-production
+NEXTAUTH_URL=http://localhost:3000
+```
 
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+### 4. Database Setup
+```bash
+# Generate Prisma Client
+npx prisma generate
 
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
+# Push schema to database
+npx prisma db push
 
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+# Seed with demo data
+npx tsx seed-demo-data.ts
+```
+
+### 5. Start Development Server
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`
+
+## 👥 Demo Accounts
+
+### Workers
+| Email | Password | Skills |
+|-------|----------|---------|
+| rajesh.kumar@example.com | password123 | Cooking, Cleaning |
+| priya.sharma@example.com | password123 | Childcare, Tutoring |
+| amit.patel@example.com | password123 | Gardening, Pet Care |
+
+### Employers
+| Email | Password |
+|-------|----------|
+| anil.mehta@example.com | password123 |
+| sneha.reddy@example.com | password123 |
+
+### Agency
+| Email | Password |
+|-------|----------|
+| contact@careconnect.com | password123 |
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+domestic-worker/
+├── prisma/
+│   ├── schema.prisma          # Database schema definition
+│   ├── dev.db                # SQLite database file
+│   └── seed-demo-data.ts     # Demo data seeding script
+├── src/
+│   ├── app/                  # Next.js App Router pages
+│   ├── components/           # Reusable React components
+│   ├── lib/                  # Utility functions and configs
+│   ├── types/                # TypeScript type definitions
+│   └── utils/                # Helper functions
+├── public/                   # Static assets
+├── .env                      # Environment variables
+├── package.json              # Dependencies and scripts
+├── tailwind.config.js        # Tailwind CSS configuration
+├── tsconfig.json            # TypeScript configuration
+└── README.md                # Project documentation
 ```
 
-## 🎨 Available Features & Components
+## 🗄 Database Schema
 
-This scaffold includes a comprehensive set of modern web development tools:
+The platform uses a comprehensive database schema with the following key entities:
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+### Core Models
+- **User**: Base user authentication and profile
+- **Worker**: Extended worker-specific information
+- **Employer**: Employer profile and preferences
+- **Agency**: Agency management and services
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+### Business Logic
+- **Job**: Job postings with requirements and location
+- **Application**: Worker applications for jobs
+- **Contract**: Employment contracts with terms
+- **Payment**: Transaction records and status tracking
+- **Attendance**: Time tracking and attendance records
+- **Review**: Rating and review system
+- **Document**: File uploads and document management
+- **Training**: Skill development modules
+- **Subscription**: Premium feature access
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+### Supporting Data
+- **Skill**: Available skills (10 predefined categories)
+- **Language**: Supported languages (5 available)
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Axios + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+## 🎯 Key Features by User Role
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+### For Workers
+- Create detailed profiles with skills and experience
+- Browse and apply for available jobs
+- Manage active contracts and payments
+- Track attendance and work history
+- Upload and manage documents
+- Access training modules for skill development
+- Receive reviews and build reputation
 
-## 🤝 Get Started with Z.ai
+### For Employers
+- Post detailed job requirements
+- Search and filter workers by skills and location
+- Review applications and hire workers
+- Manage contracts and payments
+- Track worker attendance
+- Leave reviews and ratings
+- Access analytics dashboard
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+### For Agencies
+- Manage multiple workers
+- Offer agency services
+- Handle worker verification
+- Manage subscriptions and billing
+- Provide training and support
+
+## 📊 Demo Data
+
+The platform comes with comprehensive demo data including:
+- **6 User Accounts** (3 Workers, 2 Employers, 1 Agency)
+- **10 Skills** across various categories
+- **5 Languages** for multi-language support
+- **3 Job Postings** with different requirements
+- **4 Job Applications** in various states
+- **2 Active Contracts** with payment records
+- **4 Payment Transactions** with status tracking
+- **12 Attendance Records** with time tracking
+- **2 Reviews** with ratings
+- **7 Documents** (ID, certificates, photos)
+- **3 Training Modules** for skill development
+- **4 Subscription Plans** for premium features
+
+## 🔧 Available Scripts
+
+```bash
+# Development
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start           # Start production server
+
+# Database
+npm run db:generate     # Generate Prisma Client
+npm run db:push         # Push schema to database
+npm run db:studio       # Open Prisma Studio
+npm run db:seed         # Seed demo data
+
+# Code Quality
+npm run lint            # Run ESLint
+npm run type-check      # TypeScript type checking
+```
+
+## 🔐 Security Features
+
+- **Password Hashing**: bcryptjs for secure password storage
+- **Authentication**: NextAuth.js with JWT tokens
+- **Role-based Access**: Proper authorization for different user types
+- **Input Validation**: Zod schemas for all user inputs
+- **CSRF Protection**: Built-in Next.js CSRF protection
+- **Environment Variables**: Secure configuration management
+
+## 🌐 Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## 📱 Mobile Support
+
+The platform is fully responsive and optimized for:
+- Desktop browsers
+- Tablets (iPad, Android tablets)
+- Mobile phones (iOS, Android)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+For support and questions:
+- Create an issue on GitHub
+- Contact: [your-email@example.com]
+- Documentation: [Link to detailed docs]
+
+## 🗓️ Development Roadmap
+
+### Upcoming Features
+- [ ] Real-time chat system
+- [ ] Video calling integration
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app development
+- [ ] API rate limiting
+- [ ] Email notifications
+- [ ] Calendar integration
+- [ ] GPS location tracking
+- [ ] Advanced search filters
+- [ ] Multi-currency payment support
+
+### Performance Optimizations
+- [ ] Image optimization and CDN
+- [ ] Database query optimization
+- [ ] Caching implementation
+- [ ] Progressive Web App (PWA) features
+- [ ] SEO optimization
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+**Built with ❤️ for domestic workers and employers worldwide**
+
+*Last updated: November 2025*
