@@ -259,17 +259,17 @@ For support and questions:
 
 ## 🗓️ Development Roadmap
 
-### Upcoming Features
-- [ ] Real-time chat system
-- [ ] Video calling integration
-- [ ] Advanced analytics dashboard
-- [ ] Mobile app development
-- [ ] API rate limiting
-- [ ] Email notifications
-- [ ] Calendar integration
-- [ ] GPS location tracking
-- [ ] Advanced search filters
-- [ ] Multi-currency payment support
+### In Progress - Upcoming Features
+- [x] Real-time chat system
+- [x] Video calling integration  
+- [x] Advanced analytics dashboard
+- [ ] Mobile app development (separate project)
+- [x] API rate limiting
+- [x] Email notifications
+- [x] Calendar integration
+- [x] GPS location tracking
+- [x] Advanced search filters
+- [x] Multi-currency payment support
 
 ### Performance Optimizations
 - [ ] Image optimization and CDN
